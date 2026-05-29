@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --um-blue: #00274C;
+  --um-maize: #FFCB05;
+  --navy: #0B1D3A;
+  --navy-mid: #132D54;
+  --gold: #C4943D;
+  --gold-light: #D4A84F;
+  --gold-dim: rgba(196, 148, 61, 0.08);
+  --gold-border: rgba(196, 148, 61, 0.18);
+  --bg: #F7F8FA;
+  --bg-warm: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-muted: #F3F4F6;
+  --text-1: #111827;
+  --text-2: #4B5563;
+  --text-3: #9CA3AF;
+  --text-inv: #FFFFFF;
+  --border: #E5E7EB;
+  --border-light: #F3F4F6;
+  --border-warm: rgba(196,148,61,0.18);
+  --emerald: #059669;
+  --emerald-bg: #ECFDF5;
+  --rose: #E11D48;
+  --rose-bg: #FFF1F2;
+  --sh-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --sh-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --sh-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+  --sh-lg: 0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -4px rgba(0,0,0,0.04);
+  --r-sm: 6px;
+  --r: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 999px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 0.15s;
+  --t: 0.25s;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Command Center nav (kept so it's deployment-ready) */
+.cc-nav {
+  background: #111E30;
+  padding: 0.4rem 2.5rem;
+  display: flex;
+  align-items: center;
+}
+.cc-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.15s ease;
+}
+.cc-nav a:hover { color: rgba(255,255,255,0.7); }
+
+/* Hero */
+.hero {
+  background: linear-gradient(180deg, var(--navy) 0%, #0E2344 100%);
+  border-bottom: 2px solid var(--gold);
+  padding: 2.2rem 2.5rem 2rem;
+}
+
+.hero-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.hero-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.hero-logo {
+  width: 34px; height: 34px;
+  border-radius: 7px;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.hero-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.hero h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: var(--text-inv);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 0.55rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--um-maize);
+  font-weight: 400;
+}
+
+.hero-sub {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.72);
+  max-width: 580px;
+}
+
+.hero-meta {
+  margin-top: 1.1rem;
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.55);
+}
+
+.hero-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hero-meta-item svg {
+  opacity: 0.7;
+}
+
+/* Container */
+.container {
+  max-width: 760px;
+  margin: -1.2rem auto 4rem;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* Intro card */
+.intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.4rem 1.6rem;
+  box-shadow: var(--sh-md);
+  margin-bottom: 1.6rem;
+  border-left: 3px solid var(--gold);
+}
+
+.intro-card p {
+  font-size: 1rem;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+
+.intro-card p + p {
+  margin-top: 0.7rem;
+}
+
+.intro-card strong {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+/* Question card */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.3rem 1.5rem;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 1rem;
+  transition: box-shadow var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+
+.q-card:hover {
+  box-shadow: var(--sh-md);
+}
+
+.q-card.answered {
+  border-color: var(--border-warm);
+}
+
+.q-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: var(--r-full);
+  background: var(--gold-dim);
+  color: var(--gold);
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-right: 0.7rem;
+  flex-shrink: 0;
+}
+
+.q-label {
+  display: flex;
+  align-items: flex-start;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.q-label-text {
+  padding-top: 0.15rem;
+}
+
+.q-hint {
+  font-size: 0.85rem;
+  color: var(--text-3);
+  font-weight: 400;
+  margin-left: 0.4rem;
+}
+
+/* Radio group (single column) */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  background: var(--surface);
+}
+
+.radio-option:hover {
+  border-color: var(--gold-border);
+  background: var(--gold-dim);
+}
+
+.radio-option input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.radio-option input:checked {
+  border-color: var(--gold);
+  background: var(--gold);
+  box-shadow: inset 0 0 0 3px var(--surface);
+}
+
+.radio-option input:checked + .radio-label {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.radio-option:has(input:checked) {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+}
+
+.radio-label {
+  font-size: 0.97rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* Likert scale */
+.likert-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.likert-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.likert-row:last-child {
+  border-bottom: none;
+}
+
+.likert-row-label {
+  font-size: 0.95rem;
+  color: var(--text-1);
+  font-weight: 500;
+}
+
+.likert-scale {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.likert-btn {
+  width: 38px; height: 38px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.likert-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.likert-btn.selected {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--text-inv);
+}
+
+.likert-btn.na {
+  font-size: 0.74rem;
+  width: 46px;
+  color: var(--text-3);
+  margin-left: 0.4rem;
+}
+
+.likert-btn.na.selected {
+  background: var(--text-3);
+  border-color: var(--text-3);
+  color: var(--text-inv);
+}
+
+.likert-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-3);
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border-light);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Textarea */
+.textarea-wrap {
+  position: relative;
+}
+
+textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-1);
+  background: var(--surface);
+  resize: vertical;
+  transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+
+textarea::placeholder {
+  color: var(--text-3);
+  font-style: italic;
+}
+
+/* Submit area */
+.submit-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.5rem 1.6rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  box-shadow: var(--sh-sm);
+}
+
+.submit-note {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 1rem 2rem;
+  background: var(--navy);
+  color: var(--text-inv);
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  letter-spacing: 0.01em;
+}
+
+.btn-submit:hover {
+  background: var(--navy-mid);
+  transform: translateY(-1px);
+  box-shadow: var(--sh-md);
+}
+
+.btn-submit:disabled {
+  background: var(--text-3);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success state */
+.success-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--sh-md);
+  text-align: center;
+  display: none;
+  border-top: 3px solid var(--emerald);
+}
+
+.success-card.visible {
+  display: block;
+  animation: slideUp 0.4s var(--ease);
+}
+
+.success-icon {
+  width: 56px; height: 56px;
+  border-radius: var(--r-full);
+  background: var(--emerald-bg);
+  color: var(--emerald);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.success-card h2 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 0.7rem;
+}
+
+.success-card p {
+  font-size: 1rem;
+  color: var(--text-2);
+  max-width: 520px;
+  margin: 0 auto 1.4rem;
+  line-height: 1.6;
+}
+
+.success-actions {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.4rem;
+  background: var(--surface);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.4rem;
+  background: var(--navy);
+  color: var(--text-inv);
+  border: 1px solid var(--navy);
+  border-radius: var(--r);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: var(--navy-mid);
+  box-shadow: var(--sh-md);
+}
+
+.summary-preview {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.1rem 1.2rem;
+  margin: 1.2rem 0;
+  text-align: left;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-2);
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+/* Validation error */
+.error-banner {
+  background: var(--rose-bg);
+  border: 1px solid var(--rose);
+  border-radius: var(--r);
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--rose);
+  display: none;
+}
+
+.error-banner.visible {
+  display: block;
+}
+
+/* Progress */
+.progress-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 3px;
+  background: var(--border-light);
+  margin-bottom: 1.6rem;
+  border-radius: var(--r-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--um-maize));
+  width: 0%;
+  transition: width var(--t) var(--ease);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .hero { padding: 1.6rem 1.2rem 1.4rem; }
+  .hero h1 { font-size: 1.4rem; }
+  .container { padding: 0 1rem; }
+  .q-card, .intro-card, .submit-area { padding: 1.1rem 1.2rem; }
+  .likert-row { grid-template-columns: 1fr; gap: 0.5rem; }
+  .likert-scale { justify-content: flex-start; }
+  .cc-nav { padding: 0.4rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1>Feedback on <em data-subject>Subject</em></h1>
+  </div>
+</header>
+
+<div class="container">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="intro-card">
+    <p><span data-subject>The subject</span> identified you as a close collaborator this year. Your input will help shape their year-end review — individual responses won't be shared verbatim. Takes about 3–5 minutes. Please respond by <strong>Friday, May 29</strong>.</p>
+  </div>
+
+  <form id="surveyForm">
+
+    <!-- Q1: Working frequency -->
+    <div class="q-card" data-question="q1">
+      <div class="q-label">
+        <span class="q-num">1</span>
+        <span class="q-label-text">How frequently did you work with Marie this year?</span>
+      </div>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="q1" value="Weekly or more">
+          <span class="radio-label">Weekly or more</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="q1" value="A few times a month">
+          <span class="radio-label">A few times a month</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="q1" value="Occasionally (a few times this year)">
+          <span class="radio-label">Occasionally (a few times this year)</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="q1" value="Rarely">
+          <span class="radio-label">Rarely</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Q2: Likert ratings -->
+    <div class="q-card" data-question="q2">
+      <div class="q-label">
+        <span class="q-num">2</span>
+        <span class="q-label-text">Please rate <span data-subject>them</span> in the following areas <span class="q-hint">(1 = Needs improvement, 5 = Exceptional)</span></span>
+      </div>
+      <div class="likert-table" id="likertTable">
+        <!-- populated by JS -->
+      </div>
+      <div class="likert-legend">
+        <span>1 — Needs improvement</span>
+        <span>3 — Meets expectations</span>
+        <span>5 — Exceptional</span>
+      </div>
+    </div>
+
+    <!-- Q3: Strengths -->
+    <div class="q-card" data-question="q3">
+      <div class="q-label">
+        <span class="q-num">3</span>
+        <span class="q-label-text">What is <span data-subject>this person</span> doing especially well? <span class="q-hint">A specific example is even better.</span></span>
+      </div>
+      <div class="textarea-wrap">
+        <textarea name="q3" placeholder="For example: A particular project, moment, or behavior that stood out..."></textarea>
+      </div>
+    </div>
+
+    <!-- Q4: Growth -->
+    <div class="q-card" data-question="q4">
+      <div class="q-label">
+        <span class="q-num">4</span>
+        <span class="q-label-text">Where could <span data-subject>this person</span> grow, or what would make them even more effective in supporting your work?</span>
+      </div>
+      <div class="textarea-wrap">
+        <textarea name="q4" placeholder="Constructive, specific feedback is most useful — what would you ask her to start, stop, or do differently?"></textarea>
+      </div>
+    </div>
+
+    <!-- Q5: Additional -->
+    <div class="q-card" data-question="q5">
+      <div class="q-label">
+        <span class="q-num">5</span>
+        <span class="q-label-text">Anything else I should know as I prepare their evaluation? <span class="q-hint">Optional</span></span>
+      </div>
+      <div class="textarea-wrap">
+        <textarea name="q5" placeholder="Context, accomplishments, or perspectives I might otherwise miss..."></textarea>
+      </div>
+    </div>
+
+    <!-- Q6: Respondent name (optional) -->
+    <div class="q-card" data-question="q6">
+      <div class="q-label">
+        <span class="q-num">6</span>
+        <span class="q-label-text">Your name <span class="q-hint">Optional — helpful if I want to ask a follow-up</span></span>
+      </div>
+      <div class="textarea-wrap">
+        <textarea name="q6" style="min-height: 50px;" placeholder="e.g., Dr. Stensland"></textarea>
+      </div>
+    </div>
+
+    <div class="error-banner" id="errorBanner">Please complete the required questions before submitting.</div>
+
+    <div class="submit-area">
+      <p class="submit-note">Your feedback is sent directly to a private Google Sheet I own and remains within the University of Michigan.</p>
+      <button type="button" class="btn-submit" id="submitBtn">
+        <span id="submitBtnLabel">Submit feedback</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <div class="error-banner" id="sendErrorBanner" style="margin-top: 1.2rem;"></div>
+    </div>
+  </form>
+
+  <!-- Submitted (success) state -->
+  <div class="success-card" id="submittedCard">
+    <div class="success-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Thank you</h2>
+    <p>Your feedback has been recorded. I appreciate you taking the time — your perspective will directly shape <span data-subject>their</span> year-end conversation.</p>
+    <p style="font-size: 0.72rem; color: var(--text-3); margin-top: 0.8rem;">You may now close this window.</p>
+  </div>
+</div>
+
+<script>
+const RATING_ITEMS = [
+  { key: 'responsiveness', label: 'Responsiveness and follow-through' },
+  { key: 'technical', label: 'Job knowledge and technical expertise' },
+  { key: 'communication', label: 'Communication — clarity, professionalism, timeliness' },
+  { key: 'problemsolving', label: 'Problem-solving and initiative' },
+  { key: 'collaboration', label: 'Collaboration and partnership across teams' },
+  { key: 'reliability', label: 'Reliability under deadline pressure' },
+  { key: 'overall', label: 'Overall effectiveness in their role' }
+];
+
+const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/umich.edu/s/AKfycbz3CRnSN3UcoBwWA9QDPnBb8iyaSz3MXlsr12gQ6hoJA0G_ED-xvc7TrTRGdxlZhPUpZw/exec';
+
+// Read subject (and optional cycle) from URL parameters
+const URL_PARAMS = new URLSearchParams(window.location.search);
+const SUBJECT_NAME = (URL_PARAMS.get('subject') || '').trim();
+const CYCLE = (URL_PARAMS.get('cycle') || '').trim();
+
+// If no subject in URL, show a friendly error and stop
+if (!SUBJECT_NAME) {
+  document.body.innerHTML = `
+    <div style="max-width: 560px; margin: 4rem auto; padding: 2rem; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; text-align: center;">
+      <h1 style="font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; color: #00274C; margin-bottom: 0.7rem;">This survey link is missing information</h1>
+      <p style="color: #4B5563; font-size: 1rem; line-height: 1.6;">The link you used doesn't include a subject. Please check the URL Tyler sent you, or contact him at tyhughes@umich.edu to request a corrected link.</p>
+    </div>
+  `;
+  throw new Error('Missing subject parameter');
+}
+
+// Populate subject name throughout the page
+document.title = 'Feedback on ' + SUBJECT_NAME;
+document.querySelectorAll('[data-subject]').forEach(el => {
+  el.textContent = SUBJECT_NAME;
+});
+
+// Render Likert rows
+const likertTable = document.getElementById('likertTable');
+RATING_ITEMS.forEach(item => {
+  const row = document.createElement('div');
+  row.className = 'likert-row';
+  row.innerHTML = `
+    <div class="likert-row-label">${item.label}</div>
+    <div class="likert-scale" data-rating-key="${item.key}">
+      ${[1,2,3,4,5].map(n => `<button type="button" class="likert-btn" data-value="${n}">${n}</button>`).join('')}
+      <button type="button" class="likert-btn na" data-value="N/A">N/A</button>
+    </div>
+  `;
+  likertTable.appendChild(row);
+});
+
+// Handle Likert clicks
+document.querySelectorAll('.likert-scale').forEach(scale => {
+  scale.addEventListener('click', (e) => {
+    const btn = e.target.closest('.likert-btn');
+    if (!btn) return;
+    scale.querySelectorAll('.likert-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    scale.dataset.selectedValue = btn.dataset.value;
+    updateProgress();
+    markAnswered(scale.closest('.q-card'));
+  });
+});
+
+// Mark question card as answered
+function markAnswered(card) {
+  if (!card) return;
+  card.classList.add('answered');
+}
+
+// Track text/radio changes for progress
+document.querySelectorAll('input[type=radio], textarea').forEach(el => {
+  el.addEventListener('input', updateProgress);
+  el.addEventListener('change', () => {
+    updateProgress();
+    markAnswered(el.closest('.q-card'));
+  });
+});
+
+function updateProgress() {
+  let answered = 0;
+  const total = 4; // q1, q2 (any rating), q3, q4 (q5/q6 optional)
+  if (document.querySelector('input[name=q1]:checked')) answered++;
+  const ratingsSelected = document.querySelectorAll('.likert-scale[data-selected-value]').length;
+  if (ratingsSelected >= 1) answered++;
+  if (document.querySelector('textarea[name=q3]').value.trim()) answered++;
+  if (document.querySelector('textarea[name=q4]').value.trim()) answered++;
+  const pct = Math.min(100, (answered / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function validate() {
+  const q1 = document.querySelector('input[name=q1]:checked');
+  const q3 = document.querySelector('textarea[name=q3]').value.trim();
+  const q4 = document.querySelector('textarea[name=q4]').value.trim();
+  const ratingsSelected = document.querySelectorAll('.likert-scale[data-selected-value]').length;
+  return q1 && q3 && q4 && ratingsSelected >= RATING_ITEMS.length;
+}
+
+// Collect form data into a structured payload
+function collectPayload() {
+  const ratings = {};
+  RATING_ITEMS.forEach(item => {
+    const scale = document.querySelector(`.likert-scale[data-rating-key="${item.key}"]`);
+    ratings[item.key] = scale.dataset.selectedValue || '';
+  });
+  const q1 = document.querySelector('input[name=q1]:checked');
+  return {
+    subject: SUBJECT_NAME,
+    cycle: CYCLE,
+    respondentName: document.querySelector('textarea[name=q6]').value.trim(),
+    frequency: q1 ? q1.value : '',
+    ratings: ratings,
+    strengths: document.querySelector('textarea[name=q3]').value.trim(),
+    growth: document.querySelector('textarea[name=q4]').value.trim(),
+    additional: document.querySelector('textarea[name=q5]').value.trim()
+  };
+}
+
+// Submit → POST directly to Apps Script, then show thank-you state
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const submitBtn = document.getElementById('submitBtn');
+  const submitLabel = document.getElementById('submitBtnLabel');
+  const validationBanner = document.getElementById('errorBanner');
+  const sendBanner = document.getElementById('sendErrorBanner');
+
+  if (!validate()) {
+    validationBanner.textContent = 'Please answer Q1, complete all ratings in Q2, and respond to Q3 and Q4 before submitting.';
+    validationBanner.classList.add('visible');
+    validationBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  validationBanner.classList.remove('visible');
+  sendBanner.classList.remove('visible');
+
+  submitBtn.disabled = true;
+  submitBtn.style.opacity = '0.7';
+  submitBtn.style.cursor = 'wait';
+  submitLabel.textContent = 'Submitting…';
+
+  try {
+    // Apps Script web apps redirect POSTs to googleusercontent.com, which lacks
+    // CORS headers — so we fire-and-forget in no-cors mode. The request still
+    // reaches the script and writes to the sheet; we just can't read the reply.
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(collectPayload())
+    });
+
+    // Swap to submitted state
+    document.getElementById('surveyForm').style.display = 'none';
+    const submittedCard = document.getElementById('submittedCard');
+    submittedCard.classList.add('visible');
+    submittedCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch (err) {
+    sendBanner.textContent = 'Your response could not be submitted (' + err.message + '). Please check your connection and try again.';
+    sendBanner.classList.add('visible');
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '1';
+    submitBtn.style.cursor = 'pointer';
+    submitLabel.textContent = 'Try again';
+  }
+});
+</script>
+
+</body>
+</html>
